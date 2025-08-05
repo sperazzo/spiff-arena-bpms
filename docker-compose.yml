@@ -13,16 +13,16 @@ services:
     ports:
       - "${SPIFFWORKFLOW_FRONTEND_PORT:-8001}:${SPIFFWORKFLOW_FRONTEND_PORT:-8001}/tcp"
 
-  # Ensure that the RUN_AS user is able to write to the named volume where the sqlite DB will be
-  # Solution via https://stackoverflow.com/a/73255981
-  match-volume-ownership:
-    image: alpine
-    restart: "no"
-    # Use RUN_AS if set, otherwise default to root (0:0)
-    entrypoint: |
-      /bin/sh -c "chown ${RUN_AS:-0:0} /app/db_volume"
-    volumes:
-      - spiffworkflow_backend_db:/app/db_volume:rw
+  # # Ensure that the RUN_AS user is able to write to the named volume where the sqlite DB will be
+  # # Solution via https://stackoverflow.com/a/73255981
+  # match-volume-ownership:
+  #   image: alpine
+  #   restart: "no"
+  #   # Use RUN_AS if set, otherwise default to root (0:0)
+  #   entrypoint: |
+  #     /bin/sh -c "chown ${RUN_AS:-0:0} /app/db_volume"
+  #   volumes:
+  #     - spiffworkflow_backend_db:/app/db_volume:rw
 
   spiffworkflow-backend:
     container_name: spiffworkflow-backend
@@ -31,8 +31,8 @@ services:
     #     RUN_AS="$(id -u):$(id -g)" docker compose up -d
     user: ${RUN_AS:-0:0}
     depends_on:
-      match-volume-ownership:
-        condition: service_completed_successfully
+      spiffdb:
+        condition: service_healthy
     environment:
       SPIFFWORKFLOW_BACKEND_ENV: "local_docker"
       FLASK_DEBUG: "0"
@@ -42,8 +42,8 @@ services:
 
       SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: "/app/process_models"
       SPIFFWORKFLOW_BACKEND_CONNECTOR_PROXY_URL: "${SPIFFWORKFLOW_BACKEND_CONNECTOR_PROXY_URL:-http://spiffworkflow-connector:8004}"
-      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "sqlite"
-      SPIFFWORKFLOW_BACKEND_DATABASE_URI: "sqlite:////app/db_volume/db.sqlite3"
+      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:7003/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development} #mysql+pymysql://spiffuser:spiffpass@spiffdb:3306/spiffworkflow?charset=utf8mb4
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
       SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
@@ -58,7 +58,6 @@ services:
       - "${SPIFF_BACKEND_PORT:-8000}:${SPIFF_BACKEND_PORT:-8000}/tcp"
     volumes:
       - ${SPIFFWORKFLOW_BACKEND_LOCAL_BPMN_SPEC_DIR:-./process_models}:/app/process_models
-      - spiffworkflow_backend_db:/app/db_volume
     healthcheck:
       test: "curl localhost:${SPIFF_BACKEND_PORT:-8000}/v1.0/status --fail"
       interval: 10s
@@ -80,6 +79,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
+
+  spiffdb:
+    container_name: spiffdb
+    image: mysql:8.0.29
+    platform: linux/amd64
+    cap_add:
+      - SYS_NICE
+    restart: "${SPIFFWORKFLOW_BACKEND_DATABASE_DOCKER_RESTART_POLICY:-no}"
+    environment:
+      - MYSQL_DATABASE=${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
+      - MYSQL_USER=${MYSQL_USER:-spiffuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-spiffpass}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpass}
+      # - MYSQL_TCP_PORT=7003
+    # network_mode: host
+    ports:
+      - "7003:3306"
+    volumes:
+      - spiffworkflow_backend_db:/var/lib/mysql
+    healthcheck:
+      test: mysql --user=root --password=${MYSQL_ROOT_PASSWORD:-rootpass} -e 'select 1' ${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   spiffworkflow_backend_db:

@@ -52,7 +52,7 @@ dev-env: stop-dev build-images uv-sync cp-poetry-i be-uv-sync be-db-clean fe-npm
 	@true
 
 start-dev: stop-dev
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) --env-file .env up -d
 
 stop-dev:
 	$(DOCKER_COMPOSE) down

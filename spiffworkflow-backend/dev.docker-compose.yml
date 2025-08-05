@@ -5,13 +5,17 @@ services:
       context: spiffworkflow-backend
       dockerfile: dev.Dockerfile
     user: "${RUN_AS}"
+    depends_on:                          # ← espera a que MySQL esté sano
+      spiffdb:
+        condition: service_healthy
     environment:
       FLASK_DEBUG: "1"
       POETRY_VIRTUALENVS_IN_PROJECT: "true"
-      SPIFFWORKFLOW_BACKEND_DATABASE_URI: ""
-      SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "INFO"
+      SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       SPIFFWORKFLOW_BACKEND_ENV: "${SPIFFWORKFLOW_BACKEND_ENV:-local_development}"
-      SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: ""
+      SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "true"
+      SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
       XDG_CACHE_HOME: "/app/.cache"
     env_file:
       - path: .env
