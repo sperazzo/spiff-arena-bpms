@@ -43,7 +43,7 @@ services:
       SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: "/app/process_models"
       SPIFFWORKFLOW_BACKEND_CONNECTOR_PROXY_URL: "${SPIFFWORKFLOW_BACKEND_CONNECTOR_PROXY_URL:-http://spiffworkflow-connector:8004}"
       SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
-      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:7003/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development} #mysql+pymysql://spiffuser:spiffpass@spiffdb:3306/spiffworkflow?charset=utf8mb4
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development} #mysql+pymysql://spiffuser:spiffpass@spiffdb:3306/spiffworkflow?charset=utf8mb4
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
       SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
@@ -87,6 +87,25 @@ services:
     cap_add:
       - SYS_NICE
     restart: "${SPIFFWORKFLOW_BACKEND_DATABASE_DOCKER_RESTART_POLICY:-no}"
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_bin
+      --init-connect='SET NAMES utf8mb4'
+      --innodb_lock_wait_timeout=120
+      --innodb_deadlock_detect=ON
+      --innodb_rollback_on_timeout=ON
+      --transaction-isolation=READ-COMMITTED
+      --init-connect="SET FOREIGN_KEY_CHECKS=0"
+    # command: >
+    #   --default-authentication-plugin=mysql_native_password
+    #   --character-set-server=utf8mb4
+    #   --collation-server=utf8mb4_unicode_ci
+    #   --innodb_lock_wait_timeout=120
+    #   --innodb_deadlock_detect=ON
+    #   --innodb_rollback_on_timeout=ON
+    #   --transaction-isolation=READ-COMMITTED
+    #   --foreign_key_checks=0
     environment:
       - MYSQL_DATABASE=${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       - MYSQL_USER=${MYSQL_USER:-spiffuser}

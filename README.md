@@ -92,8 +92,20 @@ Please refer to the [Makefile](Makefile) as the source of truth, but for a summa
 | fe-lint-fix | Runs `npm lint:fix` in the frontend container |
 | run-pyl | Runs all frontend and backend lints, backend unit tests |
 
+Ejemplo archivo .env
 
-## Contributing
+SPIFFWORKFLOW_BACKEND_DATABASE_NAME=spiffworkflow_backend_development
+MYSQL_USER=spiffuser
+MYSQL_PASSWORD=spiffpass
+MYSQL_ROOT_PASSWORD=rootpass
+# PostgreSQL
+# POSTGRES_DB=spiffworkflow
+# POSTGRES_USER=spiffuser
+# POSTGRES_PASSWORD=spiffpass
+# SPIFFWORKFLOW_BACKEND_DATABASE_TYPE=postgres
+# SPIFFWORKFLOW_BACKEND_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:5433/spiffarena
+# SPIFFWORKFLOW_BACKEND_ENV=local_development
+
 
 To start understanding the system, you might:
 

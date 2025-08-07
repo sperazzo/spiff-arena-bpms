@@ -1,4 +1,3 @@
-
 services:
   spiffworkflow-backend:
     build:
@@ -12,6 +11,7 @@ services:
       FLASK_DEBUG: "1"
       POETRY_VIRTUALENVS_IN_PROJECT: "true"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
+      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
       SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       SPIFFWORKFLOW_BACKEND_ENV: "${SPIFFWORKFLOW_BACKEND_ENV:-local_development}"
       SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "true"
