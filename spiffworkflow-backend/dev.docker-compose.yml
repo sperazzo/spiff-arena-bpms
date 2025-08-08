@@ -11,11 +11,37 @@ services:
       FLASK_DEBUG: "1"
       POETRY_VIRTUALENVS_IN_PROJECT: "true"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
+      SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "false" # se encarga background
       SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
       SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       SPIFFWORKFLOW_BACKEND_ENV: "${SPIFFWORKFLOW_BACKEND_ENV:-local_development}"
       SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "true"
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
+      XDG_CACHE_HOME: "/app/.cache"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./spiffworkflow-backend:/app
+
+  spiffworkflow-background:
+    build:
+      context: spiffworkflow-backend
+      dockerfile: dev.Dockerfile
+    user: "${RUN_AS}"
+    depends_on:
+      spiffdb:
+        condition: service_healthy
+    environment:
+      FLASK_DEBUG: "1"
+      POETRY_VIRTUALENVS_IN_PROJECT: "true"
+      SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
+      SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "true"  # background scheduler habilitado en creacion
+      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
+      SPIFFWORKFLOW_BACKEND_ENV: "${SPIFFWORKFLOW_BACKEND_ENV:-local_development}"
+      SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "false"
+      SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false" # se carga en backend
       XDG_CACHE_HOME: "/app/.cache"
     env_file:
       - path: .env

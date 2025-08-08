@@ -51,7 +51,8 @@ services:
       SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
       SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "example.yml"
       SPIFFWORKFLOW_BACKEND_PORT: "${SPIFF_BACKEND_PORT:-8000}"
-      SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "true"
+      # SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER: "false"
+      SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "false"
       SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "true"
       SPIFFWORKFLOW_BACKEND_URL_FOR_FRONTEND: "http://localhost:${SPIFFWORKFLOW_FRONTEND_PORT:-8001}"
     ports:
@@ -63,6 +64,33 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
+
+  spiffworkflow-background:
+    container_name: spiffworkflow-background
+    image: ghcr.io/sartography/spiffworkflow-backend:latest
+    depends_on:
+      spiffdb:
+        condition: service_healthy
+    environment:
+      SPIFFWORKFLOW_BACKEND_ENV: "local_docker"
+      FLASK_DEBUG: "0"
+      FLASK_SESSION_SECRET_KEY: "${FLASK_SESSION_SECRET_KEY:-super_secret_key}"
+      SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: "/app/process_models"
+      SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "true"  # background scheduler habilitado en creacion
+      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: "mysql"
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development} #mysql+pymysql://spiffuser:spiffpass@spiffdb:3306/spiffworkflow?charset=utf8mb4
+      SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
+      SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "my_open_id_secret_key"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
+      SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "example.yml"
+      SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "false"
+    volumes:
+      - ${SPIFFWORKFLOW_BACKEND_LOCAL_BPMN_SPEC_DIR:-./process_models}:/app/process_models
+    ports:
+      - "8008:8008/tcp"
+    restart: unless-stopped
 
   spiffworkflow-connector:
     container_name: spiffworkflow-connector
@@ -82,46 +110,33 @@ services:
 
   spiffdb:
     container_name: spiffdb
-    image: mysql:8.0.29
-    platform: linux/amd64
-    cap_add:
-      - SYS_NICE
+    image: mysql:8.4.6
     restart: "${SPIFFWORKFLOW_BACKEND_DATABASE_DOCKER_RESTART_POLICY:-no}"
     command: >
-      --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
-      --collation-server=utf8mb4_bin
+      --collation-server=utf8mb4_0900_bin
       --init-connect='SET NAMES utf8mb4'
       --innodb_lock_wait_timeout=120
       --innodb_deadlock_detect=ON
       --innodb_rollback_on_timeout=ON
       --transaction-isolation=READ-COMMITTED
-      --init-connect="SET FOREIGN_KEY_CHECKS=0"
-    # command: >
-    #   --default-authentication-plugin=mysql_native_password
-    #   --character-set-server=utf8mb4
-    #   --collation-server=utf8mb4_unicode_ci
-    #   --innodb_lock_wait_timeout=120
-    #   --innodb_deadlock_detect=ON
-    #   --innodb_rollback_on_timeout=ON
-    #   --transaction-isolation=READ-COMMITTED
-    #   --foreign_key_checks=0
+      --max_connections=300
+    # --init-connect="SET FOREIGN_KEY_CHECKS=0"
     environment:
       - MYSQL_DATABASE=${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       - MYSQL_USER=${MYSQL_USER:-spiffuser}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-spiffpass}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpass}
-      # - MYSQL_TCP_PORT=7003
-    # network_mode: host
     ports:
       - "7003:3306"
     volumes:
       - spiffworkflow_backend_db:/var/lib/mysql
     healthcheck:
-      test: mysql --user=root --password=${MYSQL_ROOT_PASSWORD:-rootpass} -e 'select 1' ${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"${MYSQL_ROOT_PASSWORD:-rootpass}\" --silent"]
+      # test: mysql --user=root --password=${MYSQL_ROOT_PASSWORD:-rootpass} -e 'select 1' ${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development}
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 20
 
 volumes:
   spiffworkflow_backend_db:
