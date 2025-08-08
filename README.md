@@ -75,6 +75,18 @@ For full instructions, see [Running SpiffWorkflow Locally with Docker](https://w
 
 The `docker-compose.yml` file is for running a full-fledged instance of spiff-arena while `editor.docker-compose.yml` provides BPMN graphical editor capability to libraries and projects that depend on SpiffWorkflow but have no built-in BPMN edit capabilities.
 
+### Example .env file
+SPIFFWORKFLOW_BACKEND_DATABASE_NAME=spiffworkflow_backend_development
+MYSQL_USER=spiffuser
+MYSQL_PASSWORD=spiffpass
+MYSQL_ROOT_PASSWORD=rootpass
+POSTGRES_DB=spiffworkflow
+POSTGRES_USER=spiffuser
+POSTGRES_PASSWORD=spiffpass
+SPIFFWORKFLOW_BACKEND_DATABASE_TYPE=postgres
+SPIFFWORKFLOW_BACKEND_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:5433/spiffarena
+SPIFFWORKFLOW_BACKEND_ENV=local_development
+
 ### Using Docker for Local Development
 
 If you have `docker` and `docker compose`, as an alternative to locally installing the required dependencies, you can leverage the development docker containers and `Makefile` while working locally. To use, clone the repo and run `make`. This will build the required images, install all dependencies, start the servers and run the linting and tests. Once complete you can [open the app](http://localhost:8001) and code changes will be reflected while running. 
@@ -91,21 +103,6 @@ Please refer to the [Makefile](Makefile) as the source of truth, but for a summa
 | be-tests-par | Runs the backend unit tests in parallel |
 | fe-lint-fix | Runs `npm lint:fix` in the frontend container |
 | run-pyl | Runs all frontend and backend lints, backend unit tests |
-
-Ejemplo archivo .env
-
-SPIFFWORKFLOW_BACKEND_DATABASE_NAME=spiffworkflow_backend_development
-MYSQL_USER=spiffuser
-MYSQL_PASSWORD=spiffpass
-MYSQL_ROOT_PASSWORD=rootpass
-# PostgreSQL
-# POSTGRES_DB=spiffworkflow
-# POSTGRES_USER=spiffuser
-# POSTGRES_PASSWORD=spiffpass
-# SPIFFWORKFLOW_BACKEND_DATABASE_TYPE=postgres
-# SPIFFWORKFLOW_BACKEND_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:5433/spiffarena
-# SPIFFWORKFLOW_BACKEND_ENV=local_development
-
 
 To start understanding the system, you might:
 
