@@ -426,7 +426,7 @@ export default function TaskShow() {
       key: 'task-name',
       component: (
         <Typography variant="h3">
-          Task: {basicTask.name_for_display} (
+          Tarea: {basicTask.name_for_display} (
           {basicTask.process_model_display_name}){statusString}
         </Typography>
       ),
