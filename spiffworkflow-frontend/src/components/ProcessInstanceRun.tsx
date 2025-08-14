@@ -74,7 +74,7 @@ export default function ProcessInstanceRun({
   processModel,
   className,
   checkPermissions = true,
-  buttonText = 'Start',
+  buttonText = 'Iniciar',
 }: OwnProps) {
   const navigate = useNavigate();
   const { addError, removeError } = useAPIError();
