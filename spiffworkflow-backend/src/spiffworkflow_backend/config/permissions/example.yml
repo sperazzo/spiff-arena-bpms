@@ -19,12 +19,53 @@ users:
     email: oskar@example.com
     password: oskar
     preferred_username: oskar
+  noelia:
+    service: local_open_id
+    email: noelia@example.com
+    password: noelia
+    preferred_username: noelia
+  rocio:
+    service: local_open_id
+    email: rocio@example.com
+    password: rocio
+    preferred_username: rocio
+  alejo:
+    service: local_open_id
+    email: alejo@example.com
+    password: alejo
+    preferred_username: alejo
+  damian:
+    service: local_open_id
+    email: damian@example.com
+    password: damian
+    preferred_username: damian
+  fernando:
+    service: local_open_id
+    email: fernando@example.com
+    password: fernando
+    preferred_username: fernando
+  diego:
+    service: local_open_id
+    email: diego@example.com
+    password: diego
+    preferred_username: diego
+  maria:
+    service: local_open_id
+    email: maria@example.com
+    password: maria
+    preferred_username: maria
 
 groups:
   admin:
-    users: [admin@example.com, nelson@example.com]
+    users: [admin@example.com, nelson@example.com, diego@example.com]
   approvers:
     users: [malala@example.com, oskar@example.com]
+  ciudadanos:
+    users: [maria@example.com, diego@example.com]
+  instructores:
+    users: [rocio@example.com, alejo@example.com, damian@example.com, diego@example.com]
+  area_licencias:
+    users: [noelia@example.com, fernando@example.com, damian@example.com, diego@example.com]
 
 permissions:
   # Admins have access to everything.
