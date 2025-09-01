@@ -199,7 +199,7 @@ export default function TaskListTable({
           >
             <h2 id="modal-title">{formSubmissionTask.name_for_display}</h2>
             <div className="indented-content explanatory-message">
-              ✅ Completaste esta tarea {' '}
+              ✅ Completaste esta tarea{' '}
               {TimeAgo.inWords(formSubmissionTask.end_in_seconds)}
               <div>
                 <Stack direction="row" spacing={2}>
