@@ -202,12 +202,12 @@ export default function CustomForm({
         const dateTodayString = formatDateString();
         if (checkType === 'minimum') {
           if (dateTodayString > formattedDateString) {
-            errors[propertyKey].addError('must be today or after');
+            errors[propertyKey].addError('la fecha no puede estar en el pasado');
           }
           // best NOT to merge this with nested if statement in case we add more or move code around
         } else if (checkType === 'maximum') {
           if (dateTodayString < formattedDateString) {
-            errors[propertyKey].addError('must be today or before');
+            errors[propertyKey].addError('la fecha no puede estar en el futuro');
           }
         }
       } else if (mdc.startsWith('field:')) {
