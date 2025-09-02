@@ -342,19 +342,19 @@ class ProcessInstanceReportService:
         return_value: list[ReportMetadataColumn] = [
             {"Header": "Id", "accessor": "id", "filterable": False},
             {
-                "Header": "Process",
+                "Header": "Proceso",
                 "accessor": "process_model_display_name",
                 "filterable": False,
             },
-            {"Header": "Start", "accessor": "start_in_seconds", "filterable": False},
-            {"Header": "End", "accessor": "end_in_seconds", "filterable": False},
+            {"Header": "Inicio", "accessor": "start_in_seconds", "filterable": False},
+            {"Header": "Fin", "accessor": "end_in_seconds", "filterable": False},
             {
-                "Header": "Started by",
+                "Header": "Iniciado por",
                 "accessor": "process_initiator_username",
                 "filterable": False,
             },
-            {"Header": "Last milestone", "accessor": "last_milestone_bpmn_name", "filterable": False},
-            {"Header": "Status", "accessor": "status", "filterable": False},
+            {"Header": "Último hito", "accessor": "last_milestone_bpmn_name", "filterable": False},
+            {"Header": "Estado", "accessor": "status", "filterable": False},
         ]
         return return_value
 

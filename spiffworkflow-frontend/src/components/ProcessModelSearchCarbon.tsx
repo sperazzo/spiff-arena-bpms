@@ -76,7 +76,7 @@ export default function ProcessModelSearch({
         return null;
       }}
       shouldFilterItem={shouldFilterProcessModel}
-      placeholder="Choose a process model"
+      placeholder="Elija un modelo de proceso"
       titleText={titleText}
       selectedItem={selectedItem}
       className="process-model-search-combobox"

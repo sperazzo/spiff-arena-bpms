@@ -1060,7 +1060,7 @@ export default function ProcessInstanceListTableWithFilters({
             return null;
           }}
           shouldFilterItem={shouldFilterReportColumn}
-          placeholder="Choose a column to show"
+          placeholder="Elija una columna para mostrar"
           titleText="Column"
           selectedItem={reportColumnToOperateOn}
         />,
