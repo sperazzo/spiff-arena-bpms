@@ -29,7 +29,7 @@ class GetLocaltime(Script):
             elif len(args) > 1:
                 timezone = args[1]
             else:
-                timezone = "US/Eastern"
+                timezone = "America/Argentina/Buenos_Aires"
             localtime: datetime = date_time.astimezone(pytz.timezone(timezone))
             return localtime
 
