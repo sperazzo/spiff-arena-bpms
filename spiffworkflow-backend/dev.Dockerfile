@@ -12,4 +12,4 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 RUN pip install uv==0.6.16 pytest-xdist==3.6.1 pymysql cryptography mysqlclient
 
-CMD ["./bin/run_server_locally"]
+CMD ["./bin/run_server_locally", "keycloak"]

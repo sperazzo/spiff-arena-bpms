@@ -66,11 +66,11 @@ groups:
   approvers:
     users: [malala@example.com, oskar@example.com]
   ciudadanos:
-    users: [maria@example.com, diego@example.com, daniel@example.com]
+    users: [maria@example.com, diego@example.com, daniel@example.com, elizabeth@example.com]
   instructores:
-    users: [rocio@example.com, alejo@example.com, damian@example.com, diego@example.com]
+    users: [rocio@example.com, alejo@example.com, damian@example.com, diego@example.com, jason@example.com, kevin@example.com]
   area_licencias:
-    users: [noelia@example.com, fernando@example.com, damian@example.com, diego@example.com]
+    users: [noelia@example.com, fernando@example.com, damian@example.com, diego@example.com, jon@example.com]
 
 permissions:
   # Admins have access to everything.

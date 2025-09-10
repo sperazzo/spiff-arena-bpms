@@ -1,5 +1,9 @@
 # version: "3.8"
 
+networks:
+  spiffworkflow:
+    external: true
+
 services:
   spiffworkflow-frontend:
     container_name: spiffworkflow-frontend
@@ -10,8 +14,13 @@ services:
     environment:
       APPLICATION_ROOT: "/"
       PORT0: "${SPIFFWORKFLOW_FRONTEND_PORT:-8001}"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-frontend"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:7002/realms/spiffworkflow-local"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_ADDITIONAL_VALID_ISSUERS: "http://localhost:7002/realms/spiffworkflow-local,http://127.0.0.1:7002/realms/spiffworkflow-local,http://keycloak:8080/realms/spiffworkflow-local"
     ports:
       - "${SPIFFWORKFLOW_FRONTEND_PORT:-8001}:${SPIFFWORKFLOW_FRONTEND_PORT:-8001}/tcp"
+    networks:
+      - spiffworkflow
 
   # # Ensure that the RUN_AS user is able to write to the named volume where the sqlite DB will be
   # # Solution via https://stackoverflow.com/a/73255981
@@ -46,10 +55,14 @@ services:
       SPIFFWORKFLOW_BACKEND_DATABASE_URI: mysql://${MYSQL_USER:-spiffuser}:${MYSQL_PASSWORD:-spiffpass}@spiffdb:3306/${SPIFFWORKFLOW_BACKEND_DATABASE_NAME:-spiffworkflow_backend_development} #mysql+pymysql://spiffuser:spiffpass@spiffdb:3306/spiffworkflow?charset=utf8mb4
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
-      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
-      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "my_open_id_secret_key"
-      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
-      SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "example.yml"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-frontend"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "JXeQExm0JhQPLumgHtIIqf52bDalHz0q"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://host.docker.internal:7002/realms/spiffworkflow-local"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_ADDITIONAL_VALID_ISSUERS: "http://localhost:7002/realms/spiffworkflow-local,http://127.0.0.1:7002/realms/spiffworkflow-local,http://keycloak:8080/realms/spiffworkflow-local"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "my_open_id_secret_key"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
+      SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "permisos.yml"
       SPIFFWORKFLOW_BACKEND_PORT: "${SPIFF_BACKEND_PORT:-8000}"
       # SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER: "false"
       SPIFFWORKFLOW_BACKEND_RUN_BACKGROUND_SCHEDULER_IN_CREATE_APP: "false"
@@ -64,6 +77,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
+    networks:
+      - spiffworkflow
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   spiffworkflow-background:
     container_name: spiffworkflow-background
@@ -82,15 +99,23 @@ services:
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
       SPIFFWORKFLOW_BACKEND_LOG_LEVEL: "DEBUG"
       SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
-      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "my_open_id_secret_key"
-      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
-      SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "example.yml"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "JXeQExm0JhQPLumgHtIIqf52bDalHz0q"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://host.docker.internal:7002/realms/spiffworkflow-local"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_ADDITIONAL_VALID_ISSUERS: "http://localhost:7002/realms/spiffworkflow-local,http://127.0.0.1:7002/realms/spiffworkflow-local,http://keycloak:8080/realms/spiffworkflow-local"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: "spiffworkflow-backend"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "my_open_id_secret_key"
+      # SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: "http://localhost:${SPIFF_BACKEND_PORT:-8000}/openid"
+      # SPIFFWORKFLOW_BACKEND_PERMISSIONS_FILE_NAME: "example.yml"
       SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "false"
     volumes:
       - ${SPIFFWORKFLOW_BACKEND_LOCAL_BPMN_SPEC_DIR:-./process_models}:/app/process_models
     ports:
       - "8008:8008/tcp"
     restart: unless-stopped
+    networks:
+      - spiffworkflow
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   spiffworkflow-connector:
     container_name: spiffworkflow-connector
@@ -137,6 +162,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
+    networks:
+      - spiffworkflow
 
 volumes:
   spiffworkflow_backend_db:

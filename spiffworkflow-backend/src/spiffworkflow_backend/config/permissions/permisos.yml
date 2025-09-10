@@ -1,0 +1,35 @@
+groups:
+  admin: { users: [] }
+  instructores: { users: [] }
+  ciudadanos: { users: [] }
+  area_licencias: { users: [] }
+
+permissions:
+  admin:
+    groups: [admin]
+    actions: [all]
+    uri: /*
+
+  basic:
+    groups: [everybody]
+    actions: [all]
+    uri: BASIC
+
+  ciudadanos-lectura:
+    groups: [ciudadanos]
+    actions: [read]
+    uri: PG:ALL
+
+  # Everyone can see everything (all groups, and processes are visible)
+  read-all-process-groups:
+    groups: [everybody]
+    actions: [read]
+    uri: PG:ALL
+  read-all-process-models:
+    groups: [everybody]
+    actions: [read]
+    uri: PM:ALL
+  run-all-process-models:
+    groups: [everybody]
+    actions: [start]
+    uri: PM:ALL

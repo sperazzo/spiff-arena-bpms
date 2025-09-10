@@ -1,3 +1,7 @@
+networks:
+  spiffworkflow:
+    external: true
+
 services:
   spiffworkflow-backend:
     build:
@@ -17,12 +21,21 @@ services:
       SPIFFWORKFLOW_BACKEND_ENV: "${SPIFFWORKFLOW_BACKEND_ENV:-local_development}"
       SPIFFWORKFLOW_BACKEND_UPGRADE_DB: "true"
       SPIFFWORKFLOW_BACKEND_LOAD_FIXTURE_DATA: "false"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_SERVER_URL: http://host.docker.internal:7002/realms/spiffworkflow-local
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_ID: spiffworkflow-backend
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_CLIENT_SECRET_KEY: "JXeQExm0JhQPLumgHtIIqf52bDalHz0q"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_ADDITIONAL_VALID_ISSUERS: "http://localhost:7002/realms/spiffworkflow-local,http://127.0.0.1:7002/realms/spiffworkflow-local,http://keycloak:8080/realms/spiffworkflow-local"
+      SPIFFWORKFLOW_BACKEND_OPENID_SCOPE: "openid profile email"
+      SPIFFWORKFLOW_BACKEND_OPEN_ID_IS_AUTHORITY_FOR_USER_GROUPS: true
+      # SPIFFWORKFLOW_BACKEND_DEFAULT_USER_GROUP: everyone
       XDG_CACHE_HOME: "/app/.cache"
     env_file:
       - path: .env
         required: false
     volumes:
       - ./spiffworkflow-backend:/app
+    networks:
+      - spiffworkflow
 
   spiffworkflow-background:
     build:
@@ -48,3 +61,5 @@ services:
         required: false
     volumes:
       - ./spiffworkflow-backend:/app
+    networks:
+      - spiffworkflow

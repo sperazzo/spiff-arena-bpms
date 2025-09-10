@@ -65,6 +65,8 @@ docker run \
   -e KEYCLOAK_ADMIN=admin \
   -e KEYCLOAK_ADMIN_PASSWORD=admin \
   -e KC_HEALTH_ENABLED="true" \
+  -e KC_HOSTNAME_URL=http://localhost:7002 \
+  -e KC_HOSTNAME_STRICT=false \
   quay.io/keycloak/keycloak:${keycloak_version} start-dev \
   -Dkeycloak.profile.feature.token_exchange=enabled \
   -Dkeycloak.profile.feature.admin_fine_grained_authz=enabled \
